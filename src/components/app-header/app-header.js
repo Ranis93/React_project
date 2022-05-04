@@ -18,12 +18,13 @@ const Header = styled.div`
     color: grey;}
 `
 
-const AppHeader = () => {
+const AppHeader = (props) => {
+    const {allPosts1, likedPosts1} = props;
     return (
         //Превратил в ссылку. Необязательный атрибут
         <Header as='a' href="https://github.com/Ranis93">     
             <h1>Ranis Iskhakov</h1>
-            <h2>5 записей, из них понравилось 0</h2>
+            <h2>{allPosts1} записей, из них понравилось {likedPosts1}</h2>
         </Header>
     )
 }
