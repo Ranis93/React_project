@@ -20,12 +20,17 @@ export default class App extends Component {
                 {id:5, label: 'Человек вечно копается в прошлом или заглядывает в будущее, а просто спокойно побыть в настоящем — такая редкость.', important: false, like: false},
                 {id:6, label: 'Как прекрасен мир, являющийся к нам во снах. От загадочных глубин океана до сверкающих звёзд Вселенной…', important: false, like: false},
                 {id:7, label: 'Все люди, посланные нам — это наше отражение.', important: false, like: false}
-            ]
+            ],
+            term: '',
+            filter:'all'
         }
         this.deleteItem = this.deleteItem.bind(this);
         this.addItem = this.addItem.bind(this);
         this.onToggleImportant = this.onToggleImportant.bind(this);
         this.onToggleLiked = this.onToggleLiked.bind(this);
+        this.searchPost = this.searchPost.bind(this);
+        this.onUpdateSearch = this.onUpdateSearch.bind(this);
+        this.onFilterSelect = this.onFilterSelect.bind(this);
 
         this.maxId = 8;
     }
@@ -94,10 +99,38 @@ export default class App extends Component {
         })
     }
 
+    searchPost(items, term) {
+        if (term.length === 0) {
+            return items
+        }
+        
+        return items.filter( (item) => {
+            return item.label.indexOf(term) > -1
+        })
+    }
+
+    filterPost(items, filter) {
+        if (filter === "like") {
+            return items.filter(item => item.like === true)
+        } else {
+            return items
+        }
+    } 
+
+    onUpdateSearch(term) {
+        this.setState({term})
+    }
+
+    onFilterSelect(filter) {
+        this.setState({filter})
+    }
+
     render() {
-        const {data} = this.state
+        const {data, term, filter} = this.state
         const likedPosts = data.filter(item => item.like).length;
         const allPosts = data.length;
+
+        const visiblePosts = this.filterPost(this.searchPost(data, term), filter);
 
         return (
             <div className="app">
@@ -106,11 +139,16 @@ export default class App extends Component {
                 allPosts1={allPosts}
                 />
                 <div className="search-panel d-flex">
-                    <SearchPanel />
-                    <PostStatusFilter/>                
+                    <SearchPanel 
+                    onUpdateSearch={this.onUpdateSearch}
+                    />
+                    <PostStatusFilter
+                    filter={filter}
+                    onFilterSelect={this.onFilterSelect}
+                    />                
                 </div>
                 <PostList
-                    posts={this.state.data}
+                    posts={visiblePosts}
                     onDelete1={this.deleteItem}
                     onToggleImportant={this.onToggleImportant}
                     onToggleLiked={this.onToggleLiked}
